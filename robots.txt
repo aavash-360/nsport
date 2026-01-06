@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://nirdeshsilwal.com/sitemap.xml

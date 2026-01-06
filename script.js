@@ -102,7 +102,7 @@ function updateTheme(isDark) {
     } else {
         body.classList.remove('dark-mode');
         // In Light Mode, show Lit Bulb
-        themeIcon.src = 'assets/party-logo.png';
+        themeIcon.src = 'assets/party-logoooo.png';
         localStorage.setItem('theme', 'light');
     }
 }
@@ -479,13 +479,17 @@ function startCountdown() {
 // Start countdown when page loads
 startCountdown();
 
-// Preloader hide on full load
-window.addEventListener('load', () => {
+// Preloader hide on full load or max 2.5s timeout
+const hidePreloader = () => {
     const preloader = document.getElementById('preloader');
-    if (preloader) {
+    if (preloader && !preloader.classList.contains('hidden')) {
         preloader.classList.add('hidden');
     }
-});
+};
+
+window.addEventListener('load', hidePreloader);
+// Fallback timeout: Ensure preloader goes away even if some assets hang
+setTimeout(hidePreloader, 2500);
 
 // Scroll-to-top button logic
 const scrollTopBtn = document.getElementById('scroll-top');

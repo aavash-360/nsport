@@ -896,6 +896,13 @@ nav {
     animation: scroll-right-to-left 60s linear infinite;
 }
 
+.gallery-track-slower {
+    display: flex;
+    width: fit-content;
+    gap: 20px;
+    animation: scroll-right-to-left 90s linear infinite;
+}
+
 .gallery-item {
     flex: 0 0 auto;
     width: 350px;
@@ -1761,7 +1768,7 @@ body.dark-mode .time-label {
         z-index: 1001;
         /* Ensure above active menu if needed */
         -webkit-tap-highlight-color: transparent;
-        tap-highlight-color: transparent;
+
         outline: none;
     }
 
@@ -2518,15 +2525,17 @@ body.dark-mode .time-label {
 
 /* Branding Logo Styling */
 .lawLogo-img {
-    max-width: 180px;
+    max-width: 120px;
+    /* Reduced specific for circular logo */
     height: auto;
     display: block;
     transition: transform 0.3s ease;
     filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
+    margin: 0 auto;
 }
 
 .lawLogo-img:hover {
-    transform: scale(1.05);
+    transform: scale(1.1) rotate(5deg);
 }
 
 @media (max-width: 768px) {
@@ -2793,6 +2802,55 @@ body.dark-mode .highlight-card p {
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
+
+    /* Swap gallery sections on mobile only */
+    body {
+        display: flex;
+        flex-direction: column;
+    }
+
+    header {
+        order: -100;
+    }
+
+    .hero {
+        order: -90;
+    }
+
+    /* Celebrity slider moves down to where main gallery was */
+    .gallery-marquee {
+        order: -60;
+    }
+
+    .about {
+        order: -80;
+    }
+
+    /* Main gallery moves up to where celebrity slider was */
+    .gallery {
+        order: -85;
+    }
+
+    .media {
+        order: -50;
+    }
+
+    .manifesto {
+        order: -40;
+    }
+
+    .volunteer {
+        order: -30;
+    }
+
+    .highlights {
+        order: -20;
+    }
+
+    .contact {
+        order: -10;
+    }
+
     .highlights-grid {
         grid-template-columns: 1fr;
         gap: 20px;
@@ -3020,7 +3078,22 @@ body:not(.dark-mode) .theme-icon:hover {
     .hero {
         height: auto;
         min-height: 70vh;
-        padding: 120px 0 40px;
+        padding: 120px 0 20px;
+        /* Reduced bottom padding from 40px to 20px */
+    }
+
+    /* Reduce spacing for celebrity slider on mobile */
+    .gallery-marquee {
+        padding: 10px 0 !important;
+        /* Reduced from 20px */
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* Reduce gallery section padding on mobile */
+    .gallery {
+        padding: 30px 0 !important;
+        /* Reduced from default 80px */
     }
 
     .hero::before {
