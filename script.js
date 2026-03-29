@@ -38,6 +38,109 @@ if (mobileBtn) {
     });
 }
 
+// Hero Slider Functionality
+const initHeroSlider = () => {
+    const sliderContainer = document.querySelector('.slider-container');
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    const prevBtn = document.querySelector('.slider-arrow.prev');
+    const nextBtn = document.querySelector('.slider-arrow.next');
+    
+    if (!sliderContainer || slides.length === 0) return;
+    
+    let currentSlide = 0;
+    let autoSlideInterval;
+    const totalSlides = slides.length;
+    const slideInterval = 4000; // 4 seconds per slide
+    
+    const updateSlider = () => {
+        // Update slides
+        slides.forEach((slide, index) => {
+            slide.classList.remove('active');
+            if (index === currentSlide) {
+                slide.classList.add('active');
+            }
+        });
+        
+        // Update dots
+        dots.forEach((dot, index) => {
+            dot.classList.remove('active');
+            if (index === currentSlide) {
+                dot.classList.add('active');
+            }
+        });
+    };
+    
+    const nextSlide = () => {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        updateSlider();
+    };
+    
+    const prevSlide = () => {
+        currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+        updateSlider();
+    };
+    
+    const goToSlide = (index) => {
+        currentSlide = index;
+        updateSlider();
+        resetAutoSlide();
+    };
+    
+    const startAutoSlide = () => {
+        autoSlideInterval = setInterval(nextSlide, slideInterval);
+    };
+    
+    const resetAutoSlide = () => {
+        clearInterval(autoSlideInterval);
+        startAutoSlide();
+    };
+    
+    // Event listeners
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            nextSlide();
+            resetAutoSlide();
+        });
+    }
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            prevSlide();
+            resetAutoSlide();
+        });
+    }
+    
+    // Dot navigation
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            goToSlide(index);
+        });
+    });
+    
+    // Pause on hover
+    const heroImage = document.querySelector('.hero-image');
+    if (heroImage) {
+        heroImage.addEventListener('mouseenter', () => {
+            clearInterval(autoSlideInterval);
+        });
+        
+        heroImage.addEventListener('mouseleave', () => {
+            startAutoSlide();
+        });
+    }
+    
+    // Start the slider
+    startAutoSlide();
+};
+
+// Initialize hero slider when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initHeroSlider);
+} else {
+    initHeroSlider();
+}
+
 // Smooth Scrolling
 // Smooth Scrolling & Mobile Menu Close
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -305,179 +408,8 @@ if (seeMoreBtn) {
     });
 }
 
-// Election Countdown Timer
-function startCountdown() {
-    const electionDate = new Date('2026-03-05T00:00:00').getTime();
-    const electionEndDate = new Date('2026-03-06T00:00:00').getTime(); // End of election day
-    const countdownDisplay = document.getElementById('countdown-timer');
-    const countdownTitle = document.querySelector('.countdown-title');
-    const countdownCTA = document.querySelector('.countdown-cta');
-
-    if (!countdownDisplay) return;
-
-    function toNepaliDigits(str) {
-        const nepaliNumerals = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
-        return str.toString().split('').map(d => nepaliNumerals[d] || d).join('');
-    }
-
-    function updateCountdown() {
-        const now = new Date().getTime();
-        const distance = electionDate - now;
-        const distanceFromEnd = electionEndDate - now;
-        const currentLang = localStorage.getItem('preferred-lang') || 'ne';
-
-        // Check if it's ELECTION DAY (March 5, 2026)
-        if (distance < 0 && distanceFromEnd > 0) {
-            // ... (keep existing election day logic, just updating time display) ...
-            // IT'S ELECTION DAY!
-            const currentDate = new Date();
-            // ... (Title/CTA updates omitted for brevity, logic remains or update via innerHTML if needed, relying on data attributes from HTML generally) ...
-            // Update title - URGENT MESSAGE
-            countdownTitle.setAttribute('data-en', '🗳️ TODAY IS ELECTION DAY! 🗳️');
-            countdownTitle.setAttribute('data-ne', '🗳️ आज चुनाव दिन हो! 🗳️');
-            countdownTitle.textContent = currentLang === 'en' ? '🗳️ TODAY IS ELECTION DAY! 🗳️' : '🗳️ आज चुनाव दिन हो! 🗳️';
-            countdownTitle.style.color = 'var(--secondary-color)';
-            countdownTitle.style.fontSize = '1.2rem';
-            countdownTitle.style.animation = 'pulse 1.5s ease-in-out infinite';
-
-            // Update CTA - URGENT CALL TO ACTION
-            countdownCTA.setAttribute('data-en', '⚡ VOTE NOW! YOUR VOICE MATTERS! ⚡');
-            countdownCTA.setAttribute('data-ne', '⚡ अहिले मतदान गर्नुहोस्! तपाईंको आवाज महत्त्वपूर्ण छ! ⚡');
-            countdownCTA.textContent = currentLang === 'en' ? '⚡ VOTE NOW! YOUR VOICE MATTERS! ⚡' : '⚡ अहिले मतदान गर्नुहोस्! तपाईंको आवाज महत्त्वपूर्ण छ! ⚡';
-            countdownCTA.style.fontSize = '1.1rem';
-            countdownCTA.style.animation = 'pulse 1s ease-in-out infinite';
-
-            // Calculate time remaining in the day
-            const endOfDay = new Date('2026-03-06T00:00:00').getTime();
-            const timeLeft = endOfDay - now;
-            const hoursLeft = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-            const secondsLeft = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-            // Display time remaining to vote today
-            let dStr = '00';
-            let hStr = String(hoursLeft).padStart(2, '0');
-            let mStr = String(minutesLeft).padStart(2, '0');
-            let sStr = String(secondsLeft).padStart(2, '0');
-
-            if (currentLang === 'ne') {
-                dStr = toNepaliDigits(dStr);
-                hStr = toNepaliDigits(hStr);
-                mStr = toNepaliDigits(mStr);
-                sStr = toNepaliDigits(sStr);
-            }
-
-            document.getElementById('days').textContent = dStr;
-            document.getElementById('hours').textContent = hStr;
-            document.getElementById('minutes').textContent = mStr;
-            document.getElementById('seconds').textContent = sStr;
-
-            // Update labels to show "Time Left to Vote"
-            document.querySelector('#days').nextElementSibling.setAttribute('data-en', 'Day');
-            document.querySelector('#days').nextElementSibling.setAttribute('data-ne', 'दिन');
-            document.querySelector('#hours').nextElementSibling.setAttribute('data-en', 'Hours');
-            document.querySelector('#hours').nextElementSibling.setAttribute('data-ne', 'घण्टा');
-            document.querySelector('#minutes').nextElementSibling.setAttribute('data-en', 'Minutes');
-            document.querySelector('#minutes').nextElementSibling.setAttribute('data-ne', 'मिनेट');
-            document.querySelector('#seconds').nextElementSibling.setAttribute('data-en', 'Seconds');
-            document.querySelector('#seconds').nextElementSibling.setAttribute('data-ne', 'सेकेन्ड');
-
-            // Update labels text immediately
-            document.querySelectorAll('.time-label').forEach(el => {
-                el.textContent = el.getAttribute(`data-${currentLang}`);
-            });
-
-            return;
-        }
-
-        // Check if election has passed (after March 5, 2026)
-        if (distanceFromEnd < 0) {
-            // Show current date and time instead
-            const currentDate = new Date();
-
-            // Update title
-            countdownTitle.setAttribute('data-en', 'Current Date & Time');
-            countdownTitle.setAttribute('data-ne', 'हालको मिति र समय');
-            countdownTitle.textContent = currentLang === 'en' ? 'Current Date & Time' : 'हालको मिति र समय';
-            countdownTitle.style.color = 'var(--primary-color)';
-            countdownTitle.style.fontSize = '1rem';
-            countdownTitle.style.animation = 'none';
-
-            // Update CTA
-            countdownCTA.setAttribute('data-en', 'Thank you for your support!');
-            countdownCTA.setAttribute('data-ne', 'तपाईंको समर्थनको लागि धन्यवाद!');
-            countdownCTA.textContent = currentLang === 'en' ? 'Thank you for your support!' : 'तपाईंको समर्थनको लागि धन्यवाद!';
-            countdownCTA.style.fontSize = '0.9rem';
-            countdownCTA.style.animation = 'pulse 2s ease-in-out infinite';
-
-            // Display current time in the countdown boxes
-            let hours = String(currentDate.getHours()).padStart(2, '0');
-            let minutes = String(currentDate.getMinutes()).padStart(2, '0');
-            let seconds = String(currentDate.getSeconds()).padStart(2, '0');
-            let day = String(currentDate.getDate()).padStart(2, '0');
-
-            if (currentLang === 'ne') {
-                hours = toNepaliDigits(hours);
-                minutes = toNepaliDigits(minutes);
-                seconds = toNepaliDigits(seconds);
-                day = toNepaliDigits(day);
-            }
-
-            document.getElementById('days').textContent = day;
-            document.getElementById('hours').textContent = hours;
-            document.getElementById('minutes').textContent = minutes;
-            document.getElementById('seconds').textContent = seconds;
-
-            // Update labels
-            document.querySelector('#days').nextElementSibling.setAttribute('data-en', 'Day');
-            document.querySelector('#days').nextElementSibling.setAttribute('data-ne', 'दिन');
-            document.querySelector('#hours').nextElementSibling.setAttribute('data-en', 'Hour');
-            document.querySelector('#hours').nextElementSibling.setAttribute('data-ne', 'घण्टा');
-            document.querySelector('#minutes').nextElementSibling.setAttribute('data-en', 'Min');
-            document.querySelector('#minutes').nextElementSibling.setAttribute('data-ne', 'मिनेट');
-            document.querySelector('#seconds').nextElementSibling.setAttribute('data-en', 'Sec');
-            document.querySelector('#seconds').nextElementSibling.setAttribute('data-ne', 'सेकेन्ड');
-
-            // Update labels text immediately
-            document.querySelectorAll('.time-label').forEach(el => {
-                el.textContent = el.getAttribute(`data-${currentLang}`);
-            });
-
-            return;
-        }
-
-        // Normal countdown (before election day)
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-        let dStr = String(days).padStart(2, '0');
-        let hStr = String(hours).padStart(2, '0');
-        let mStr = String(minutes).padStart(2, '0');
-        let sStr = String(seconds).padStart(2, '0');
-
-        if (currentLang === 'ne') {
-            dStr = toNepaliDigits(dStr);
-            hStr = toNepaliDigits(hStr);
-            mStr = toNepaliDigits(mStr);
-            sStr = toNepaliDigits(sStr);
-        }
-
-        // Update display with leading zeros
-        document.getElementById('days').textContent = dStr;
-        document.getElementById('hours').textContent = hStr;
-        document.getElementById('minutes').textContent = mStr;
-        document.getElementById('seconds').textContent = sStr;
-    }
-
-    // Update immediately and then every second
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
-}
-
-// Start countdown when page loads
-startCountdown();
+// Hero Section logic is now primarily CSS-based or handled via global initializers.
+// Any future interactive logic for the Vision card can be added here.
 
 // Preloader hide on full load or max 2.5s timeout
 const hidePreloader = () => {
